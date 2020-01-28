@@ -1,10 +1,5 @@
 # Sentiment-analysis 
-Twitter is a popular social networking platform where members create and interact with messages known as “tweets”. This serves as a mean for individuals to express their thoughts and feelings about different subjects. Various different parties such as consumers and marketers have done sentiment analysis on such tweets to gather insights into products or to conduct market analysis.</br></br>
-
-In this project, I attempt to conduct sentiment analysis on “tweets” using a simple neural network. I attempt to classify the polarity of the tweet where it is either positive or negative. For example:</br>
-“I like the new design of the website!” → Positive</br>
-“The new design is awful!” → Negative</br>
-If the tweet has both positive and negative elements, the more dominant sentiment should be picked as the final label.</br></br>
+This is a web app that allows search twitter and it will perform sentiment analysis on the resulting tweets of the search query. You can also enter a text to perform sentiment analysis on. The sentiment analysis is done by a Neural Network model built with the Keras API present in the tensorflow python's library. The model was train with the Sentiment140 dataset and it yields an accuracy of 77%.
 
 # Installation
 First make sure you have python and pip install. If you install python, pip should also be install along with it.</br></br>
