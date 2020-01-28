@@ -1,0 +1,145 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <meta http-equiv="X-UA-Compatible" content="ie=edge">
+    <title>Sentiment Analysis</title>
+
+    <style>
+        table, th, td {
+            border: 1px solid black;
+        }
+        th, td {
+            padding: 15px;
+        }
+    </style>
+
+    <script src="https://ajax.googleapis.com/ajax/libs/jquery/3.4.1/jquery.min.js"></script>
+    <script type=text/javascript>
+
+        function build_tweet_table(data) {
+            var html = "<table>";
+            html += "<tr><th>Tweet</th><th>Sentiment</th><th>Confidence (%)</th></tr>";
+            data.forEach((obj, i) => {
+                row = `<tr><td>${obj.tweet}</td><td>${obj.sentiment}</td><td>${obj.confidence}</td></tr>`;
+                html += row;
+            });
+            html += "</table>";
+            return html;
+        }
+
+        function tweet_metrics(data) {
+            positive_tweets_count = 0;
+            negative_tweets_count = 0;
+            data.forEach((obj,i) => {
+                if (obj.sentiment == 'positive') {
+                    positive_tweets_count++;
+                }
+                else if (obj.sentiment == 'negative') {
+                    negative_tweets_count++;
+                }
+            });
+            tweets_count = data.length;
+            metrics = {
+                positive: Math.round((positive_tweets_count / tweets_count) * 100),
+                negative: Math.round((negative_tweets_count / tweets_count) * 100)
+            }
+            return metrics;
+        }
+
+        function switch_tabs(tab) {
+            if (tab == "check-tweets") {
+                $("#check-tweets").show();
+                $("#check-text").hide();
+            }
+            else if (tab == "check-text") {
+                $("#check-tweets").hide();
+                $("#check-text").show();
+            }
+        }
+
+		$(function() {
+
+            $('#inputQuery').bind('submit', () => {
+                $("#result_tweet").html("<p>Wait while i look for tweets...</p>");
+                $.getJSON('/submit_query', {
+                query: $('input[name="query"]').val(),
+                tweet_count: $('select[name="tweet_count"]').val(),
+                }, (data) => {
+                    console.log(data);
+                    var tweet_metrics_data = tweet_metrics(data);
+                    var display = `<h3>${tweet_metrics_data.positive}% positive tweets and ${tweet_metrics_data.negative}% negative tweets</h3>`;
+                    var table = build_tweet_table(data);
+                    display += table;
+                    $("#result_tweet").html(display);
+                });
+                return false;
+            });
+
+            $('#inputText').bind('submit', () => {
+                $("#result_text").text("Thinking...");
+                $.getJSON('/submit_text', {
+                    sentence: $('textarea[name="sentence"]').val(),
+                }, (data) => {
+                    console.log(data);
+                    var sentiment = "";
+                    if (data.sentiment == "negative") {
+                        sentiment = "This is a negative sentiment &#128532; , I am "+data.confidence+" % sure."
+                    }
+                    else if (data.sentiment == "positive") {
+                        sentiment = "This is a positive sentiment &#128512; , I am "+data.confidence+"% sure."
+                    }
+                    $("#result_text").html(sentiment);
+                });
+                return false;
+            });
+
+            $("#check-tweets-btn").bind("click", function() {
+                switch_tabs("check-tweets");
+            });
+
+            $("#check-text-btn").bind("click", function() {
+                switch_tabs("check-text");
+            });
+
+		});
+	</script>
+
+</head>
+<body>
+    <div>
+        <button id="check-tweets-btn">Check Tweets</button>
+        <button id="check-text-btn">Check a Text</button>
+    </div>
+    <hr>
+    <div id="check-tweets">
+        <form id="inputQuery">
+            <input name="query" type="text" autocomplete="off" placeholder="Search Tweets"/>
+            <button type="submit">Submit</button>
+    
+            <span>Number of tweets</span>
+            <select name="tweet_count">
+                <option value=5 selected>5</option>
+                <option value=10>10</option>
+                <option value=15>15</option>
+                <option value=20>20</option>
+                <option value=25>25</option>
+                <option value=30>30</option>
+            </select>
+    
+        </form>
+        <hr>
+        <div id="result_tweet"></div>
+    </div>
+
+    <div id="check-text" style="display:none;">
+        <form id="inputText">
+            <textarea cols="60" rows="5" name="sentence" placeholder="Write someting here"></textarea></br>
+            <button type="submit">Check</button>
+        </form>
+        <hr>
+        <p id="result_text"></p>
+    </div>
+</body>
+</html>
