@@ -9,5 +9,6 @@ This will install all the required python packages used for the program.</br></b
 
 Enter your twitter APi credentials in the file twitter_api.py</br></br>
 
+Build the model using the build_model.py script. (the model will be saved in sentiment-analysis-model folder)
 Then in the project directory run the following command:</br> python serve.py</br></br>
 This will launch a flask's web server and in the console it will print the address where you need to go to access the application.</br>
